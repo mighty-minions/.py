@@ -1,0 +1,81 @@
+!pip install xgboost
+!pip install scikit-learn
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from xgboost import XGBClassifier
+from sklearn.metrics import accuracy_score, roc_auc_score, confusion_matrix, classification_report
+file_path = "C:/Users/laksh/Downloads/project/test.csv"  
+data = pd.read_csv(file_path)
+print("Dataset Overview:")
+print(data.head())
+print("\nMissing Values:")
+print(data.isnull().sum())
+label_encoders = {}
+for col in data.select_dtypes(include=['object']).columns:
+    le = LabelEncoder()
+    data[col] = le.fit_transform(data[col])
+    label_encoders[col] = le
+numerical_cols = data.select_dtypes(include=['int64', 'float64']).columns
+plt.figure(figsize=(16,12))  # Increased figure size for better readability
+heatmap = sns.heatmap(data[numerical_cols].corr(), annot=True, cmap='coolwarm', fmt='.2f', linewidths=0.5)
+plt.title("Feature Correlation Heatmap")
+plt.xticks(rotation=45, ha='right')  
+plt.yticks(rotation=0)
+plt.subplots_adjust(bottom=0.3, left=0.2)  
+plt.show()
+plt.figure(figsize=(6,6))
+data['Churn'].value_counts().plot.pie(autopct='%1.1f%%', colors=['lightblue', 'orange'])
+plt.title("Churn Distribution")plt.figure(figsize=(10,5))
+sns.barplot(x=data['Age'].value_counts().index, y=data['Age'].value_counts().values, palette='viridis')
+plt.title("Age Distribution")
+plt.xlabel("Age")
+plt.ylabel("Count")
+plt.xticks(rotation=45)
+plt.show()
+plt.figure(figsize=(10,5))
+sns.barplot(x=data['Churn'].value_counts().index, y=data['Churn'].value_counts().values, palette='magma')
+plt.title("Churn Score Distribution")
+plt.xlabel("Churn")
+plt.ylabel("Count")
+plt.xticks(rotation=45)
+plt.show()
+y = data['Churn'] 
+X = data.drop(columns=['Churn'])
+X.fillna(X.mean(), inplace=True)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+X_train, X_test, y_train, y_test = train_test_split(X_scaled, y, test_size=0.2, random_state=42)
+models = {
+    "Logistic Regression": LogisticRegression(),
+    "Random Forest": RandomForestClassifier(n_estimators=100, random_state=42),
+    "XGBoost": XGBClassifier(eval_metric='logloss')
+}
+results = {}
+for name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    
+    acc = accuracy_score(y_test, y_pred)
+    roc_auc = roc_auc_score(y_test, y_pred)
+    cm = confusion_matrix(y_test, y_pred)
+    
+    results[name] = {"Accuracy": acc, "ROC-AUC": roc_auc, "Confusion Matrix": cm}
+    
+    print(f"\n{name} Performance:")
+    print(f"Accuracy: {acc:.4f}, ROC-AUC: {roc_auc:.4f}")
+    print("Confusion Matrix:")
+    print(cm)
+    print("Classification Report:")
+    print(classification_report(y_test, y_pred))
+results_df = pd.DataFrame(results).T
+print("\nModel Comparison:")
+print(results_df)
+plt.ylabel('')
+plt.show()
