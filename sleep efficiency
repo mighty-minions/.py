@@ -1,0 +1,18 @@
+import pandas as pd
+sc = pd.read_csv("C:/Users/Lasya/Downloads/sleep efficiency/Sleep_Efficiency.csv")
+sc.head()
+sc.tail()
+sc.dropna()
+sc.isnull()
+sc["Gender"]=sc["Gender"].replace("Male",0)
+sc["Gender"]=sc["Gender"].replace("Female",1)
+sc["Smoking status"]=sc["Smoking status"].replace("Yes",0)
+sc["Smoking status"]=sc["Smoking status"].replace("No",1)
+import matplotlib.pyplot as plt
+df = pd.read_csv("C:/Users/Lasya/Downloads/sleep efficiency/Sleep_Efficiency.csv")
+plt.bar(df['Age'],df['ID'])
+plt.hist(df['Age'],df['ID'])
+plt.scatter(df['Age'],df['ID'])
+plt.boxplot(df['Age'])
+df['Gender'].value_counts()
+df['Gender'].value_counts(normalize='index')
