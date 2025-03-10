@@ -1,0 +1,16 @@
+import pandas as pd
+import numpy as np
+import matplotllib.pyplot as pit
+thy
+thy.head(5)
+thy.tail(9)
+thy.isnull()
+thy,dropna()
+df = pd.read_csv("c:/users/dell/Desktop/data/thyroid_cancer_risk_data.csv")
+plt.bar(df['Age'],df ['Patient_ID'])
+plt.hist(df['Age'],df['Patient_ID'])
+plt.scatter(df['Age'],df['Patient_ID'])
+plt.boxplot(df['Age'])
+df['Gender'].value_counts()
+df['Gender'].value_counts(normalize='index')
+df['Country'].value_counts()
